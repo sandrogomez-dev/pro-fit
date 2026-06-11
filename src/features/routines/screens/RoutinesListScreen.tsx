@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Alert, FlatList, StyleSheet, Text, View } from 'react-native';
+import { useShallow } from 'zustand/react/shallow';
 
 import { Button, Screen, TextField } from '@/components';
 import {
@@ -16,7 +17,7 @@ import { RoutineCard } from '../components/RoutineCard';
 
 export function RoutinesListScreen() {
   const router = useRouter();
-  const routines = useRoutinesStore(selectActiveRoutines);
+  const routines = useRoutinesStore(useShallow(selectActiveRoutines));
   const exercises = useRoutinesStore((s) => s.exercises);
   const canCreate = useRoutinesStore(selectCanCreateRoutine);
   const createRoutine = useRoutinesStore((s) => s.createRoutine);

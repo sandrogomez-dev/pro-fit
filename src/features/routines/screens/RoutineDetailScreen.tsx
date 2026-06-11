@@ -1,6 +1,7 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { useShallow } from 'zustand/react/shallow';
 
 import { Button, Screen, TextField } from '@/components';
 import {
@@ -22,7 +23,7 @@ function parseOptionalInt(value: string): number | null {
 export function RoutineDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const routine = useRoutinesStore(selectRoutineById(id));
-  const exercises = useRoutinesStore(selectExercisesForRoutine(id));
+  const exercises = useRoutinesStore(useShallow(selectExercisesForRoutine(id)));
   const renameRoutine = useRoutinesStore((s) => s.renameRoutine);
   const addExercise = useRoutinesStore((s) => s.addExercise);
   const deleteExercise = useRoutinesStore((s) => s.deleteExercise);
