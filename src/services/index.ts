@@ -5,3 +5,4 @@
  */
 export { supabase, requireSupabase, isSupabaseConfigured } from './supabase';
 export { env } from './env';
+export * as authService from './auth';
