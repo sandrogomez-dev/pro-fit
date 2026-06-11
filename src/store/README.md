@@ -7,4 +7,5 @@ Local-first, on-device-persisted global state (Zustand + AsyncStorage).
 - Persistence goes through `/services`, not directly to AsyncStorage from here.
 - Keep slices small and per-domain (e.g. `useWorkoutStore`, `useTimerStore`).
 
-Empty for the Phase 1 skeleton — slices land with their features.
+Slices: `authStore` (session + profile/premium), `routinesStore` (routines &
+exercises, local-first + persisted + sync). More land with their features.

@@ -14,4 +14,5 @@ Planned MVP features (AGENTS.md §3):
 
 Shared, presentational UI goes in `/src/components`; shared logic in `/src/hooks`.
 
-Empty for the Phase 1 skeleton.
+Built so far: `auth` (email sign-in/up), `routines` (routines & exercises CRUD,
+local-first). Remaining MVP features are still to come.

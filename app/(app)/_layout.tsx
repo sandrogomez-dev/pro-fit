@@ -1,9 +1,12 @@
 import { Stack } from 'expo-router';
 
+import { useRoutinesSync } from '@/features/routines';
 import { colors } from '@/theme';
 
-/** Stack for the authenticated app. Feature screens get added here. */
+/** Stack for the authenticated app. Drives routines sync while mounted. */
 export default function AppLayout() {
+  useRoutinesSync();
+
   return (
     <Stack
       screenOptions={{
@@ -13,7 +16,8 @@ export default function AppLayout() {
         contentStyle: { backgroundColor: colors.background },
       }}
     >
-      <Stack.Screen name="index" options={{ title: 'ProFit' }} />
+      <Stack.Screen name="index" options={{ title: 'Routines' }} />
+      <Stack.Screen name="routine/[id]" options={{ title: 'Routine' }} />
     </Stack>
   );
 }
