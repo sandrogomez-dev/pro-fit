@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { Button, Screen, TextField } from '@/components';
 import { authService } from '@/services';
-import { colors, fontSize, fontWeight, spacing } from '@/theme';
+import { colors, fontSize, fontWeight, spacing, tracking } from '@/theme';
 
 const MIN_PASSWORD_LENGTH = 6;
 
@@ -67,7 +67,8 @@ export function SignUpScreen() {
     <Screen>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>Create your account</Text>
+          <Text style={styles.brand}>PROFIT</Text>
+          <Text style={styles.title}>Create account</Text>
           <Text style={styles.subtitle}>Start logging your workouts.</Text>
         </View>
 
@@ -127,10 +128,19 @@ const styles = StyleSheet.create({
   header: {
     gap: spacing.sm,
   },
+  brand: {
+    color: colors.accent,
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.black,
+    letterSpacing: tracking.wider,
+    textAlign: 'center',
+    marginBottom: spacing.xs,
+  },
   title: {
     color: colors.text,
-    fontSize: fontSize.xl,
-    fontWeight: fontWeight.bold,
+    fontSize: fontSize.hero,
+    fontWeight: fontWeight.black,
+    letterSpacing: tracking.tight,
     textAlign: 'center',
   },
   subtitle: {

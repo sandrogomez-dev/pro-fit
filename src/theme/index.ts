@@ -5,7 +5,7 @@
  */
 import { colors } from './colors';
 import { spacing, radius, minTapTarget } from './spacing';
-import { fontSize, fontWeight } from './typography';
+import { fontSize, fontWeight, tracking } from './typography';
 
 export { colors, type ColorToken } from './colors';
 export {
@@ -18,8 +18,10 @@ export {
 export {
   fontSize,
   fontWeight,
+  tracking,
   type FontSizeToken,
   type FontWeightToken,
+  type TrackingToken,
 } from './typography';
 
 export const theme = {
@@ -29,6 +31,7 @@ export const theme = {
   minTapTarget,
   fontSize,
   fontWeight,
+  tracking,
 } as const;
 
 export type Theme = typeof theme;

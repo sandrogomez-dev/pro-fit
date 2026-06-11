@@ -1,6 +1,14 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { colors, fontSize, fontWeight, minTapTarget, radius, spacing } from '@/theme';
+import {
+  colors,
+  fontSize,
+  fontWeight,
+  minTapTarget,
+  radius,
+  spacing,
+  tracking,
+} from '@/theme';
 
 interface ExerciseRowProps {
   name: string;
@@ -11,12 +19,12 @@ interface ExerciseRowProps {
 
 function targetLabel(sets: number | null, reps: number | null): string | null {
   if (sets != null && reps != null) return `${sets} × ${reps}`;
-  if (sets != null) return `${sets} sets`;
-  if (reps != null) return `${reps} reps`;
+  if (sets != null) return `${sets} SETS`;
+  if (reps != null) return `${reps} REPS`;
   return null;
 }
 
-/** Presentational exercise row inside a routine. */
+/** Athletic exercise row inside a routine. */
 export function ExerciseRow({ name, targetSets, targetReps, onDelete }: ExerciseRowProps) {
   const target = targetLabel(targetSets, targetReps);
 
@@ -26,8 +34,12 @@ export function ExerciseRow({ name, targetSets, targetReps, onDelete }: Exercise
         <Text style={styles.name} numberOfLines={1}>
           {name}
         </Text>
-        {target != null && <Text style={styles.target}>{target}</Text>}
       </View>
+      {target != null && (
+        <View style={styles.targetChip}>
+          <Text style={styles.targetText}>{target}</Text>
+        </View>
+      )}
       <Pressable
         onPress={onDelete}
         hitSlop={spacing.md}
@@ -57,24 +69,32 @@ const styles = StyleSheet.create({
   },
   info: {
     flex: 1,
-    gap: spacing.xs,
   },
   name: {
     color: colors.text,
     fontSize: fontSize.md,
-    fontWeight: fontWeight.medium,
+    fontWeight: fontWeight.semibold,
   },
-  target: {
-    color: colors.textMuted,
-    fontSize: fontSize.sm,
-  },
-  delete: {
+  targetChip: {
+    backgroundColor: colors.accentMuted,
+    borderRadius: radius.sm,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
   },
+  targetText: {
+    color: colors.accent,
+    fontSize: fontSize.xs,
+    fontWeight: fontWeight.extrabold,
+    letterSpacing: tracking.wide,
+  },
+  delete: {
+    paddingHorizontal: spacing.xs,
+  },
   deleteText: {
-    color: colors.danger,
-    fontSize: fontSize.sm,
-    fontWeight: fontWeight.medium,
+    color: colors.textFaint,
+    fontSize: fontSize.xs,
+    fontWeight: fontWeight.semibold,
+    textTransform: 'uppercase',
+    letterSpacing: tracking.wide,
   },
 });

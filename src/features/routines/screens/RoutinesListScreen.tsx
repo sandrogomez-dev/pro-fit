@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 
 import { Button, Screen, TextField, confirm, notify } from '@/components';
@@ -11,7 +11,7 @@ import {
   useAuthStore,
   useRoutinesStore,
 } from '@/store';
-import { colors, fontSize, spacing } from '@/theme';
+import { colors, fontSize, fontWeight, spacing, tracking } from '@/theme';
 
 import { RoutineCard } from '../components/RoutineCard';
 
@@ -22,6 +22,7 @@ export function RoutinesListScreen() {
   const canCreate = useRoutinesStore(selectCanCreateRoutine);
   const createRoutine = useRoutinesStore((s) => s.createRoutine);
   const deleteRoutine = useRoutinesStore((s) => s.deleteRoutine);
+  const isPremium = useAuthStore((s) => s.isPremium);
   const signOut = useAuthStore((s) => s.signOut);
 
   const [name, setName] = useState('');
@@ -63,6 +64,19 @@ export function RoutinesListScreen() {
 
   return (
     <Screen>
+      <View style={styles.header}>
+        <View style={styles.titleBlock}>
+          <Text style={styles.title}>ROUTINES</Text>
+          <Text style={styles.count}>
+            {routines.length}
+            {!isPremium && <Text style={styles.countMax}> / {FREE_ROUTINE_LIMIT}</Text>}
+          </Text>
+        </View>
+        <Pressable onPress={() => void signOut()} hitSlop={spacing.md}>
+          <Text style={styles.signOut}>Sign out</Text>
+        </Pressable>
+      </View>
+
       <View style={styles.addRow}>
         <View style={styles.addInput}>
           <TextField
@@ -78,7 +92,7 @@ export function RoutinesListScreen() {
       </View>
       {!canCreate && (
         <Text style={styles.limitNote}>
-          Free plan: {FREE_ROUTINE_LIMIT} routines max. Go premium for unlimited.
+          Free plan: {FREE_ROUTINE_LIMIT} routines max — go premium for unlimited.
         </Text>
       )}
 
@@ -87,8 +101,12 @@ export function RoutinesListScreen() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
+        showsVerticalScrollIndicator={false}
         ListEmptyComponent={
-          <Text style={styles.empty}>No routines yet. Create your first above.</Text>
+          <View style={styles.empty}>
+            <Text style={styles.emptyTitle}>No routines yet</Text>
+            <Text style={styles.emptyText}>Create your first one above to start training.</Text>
+          </View>
         }
         renderItem={({ item }) => (
           <RoutineCard
@@ -99,23 +117,48 @@ export function RoutinesListScreen() {
           />
         )}
       />
-
-      <Button
-        title="Sign out"
-        variant="ghost"
-        onPress={() => void signOut()}
-        style={styles.signOut}
-      />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    paddingTop: spacing.xl,
+  },
+  titleBlock: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: spacing.md,
+  },
+  title: {
+    color: colors.text,
+    fontSize: fontSize.hero,
+    fontWeight: fontWeight.black,
+    letterSpacing: tracking.tight,
+  },
+  count: {
+    color: colors.accent,
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.extrabold,
+  },
+  countMax: {
+    color: colors.textFaint,
+    fontWeight: fontWeight.semibold,
+  },
+  signOut: {
+    color: colors.textMuted,
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.semibold,
+    marginTop: spacing.sm,
+  },
   addRow: {
     flexDirection: 'row',
     alignItems: 'flex-end',
     gap: spacing.md,
-    paddingTop: spacing.lg,
+    paddingTop: spacing.xl,
   },
   addInput: {
     flex: 1,
@@ -127,21 +170,28 @@ const styles = StyleSheet.create({
     color: colors.warning,
     fontSize: fontSize.xs,
     marginTop: spacing.sm,
+    fontWeight: fontWeight.medium,
   },
   list: {
-    paddingVertical: spacing.lg,
+    paddingVertical: spacing.xl,
     flexGrow: 1,
   },
   separator: {
     height: spacing.md,
   },
   empty: {
-    color: colors.textMuted,
-    fontSize: fontSize.md,
-    textAlign: 'center',
-    marginTop: spacing.xxl,
+    alignItems: 'center',
+    marginTop: spacing.xxxl,
+    gap: spacing.sm,
   },
-  signOut: {
-    marginBottom: spacing.sm,
+  emptyTitle: {
+    color: colors.text,
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.bold,
+  },
+  emptyText: {
+    color: colors.textMuted,
+    fontSize: fontSize.sm,
+    textAlign: 'center',
   },
 });

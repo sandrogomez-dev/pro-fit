@@ -9,7 +9,7 @@ import {
   selectRoutineById,
   useRoutinesStore,
 } from '@/store';
-import { colors, fontSize, fontWeight, spacing } from '@/theme';
+import { colors, fontSize, fontWeight, spacing, tracking } from '@/theme';
 
 import { ExerciseRow } from '../components/ExerciseRow';
 
@@ -126,10 +126,11 @@ const styles = StyleSheet.create({
     gap: spacing.lg,
   },
   sectionTitle: {
-    color: colors.textMuted,
+    color: colors.accent,
     fontSize: fontSize.sm,
-    fontWeight: fontWeight.semibold,
+    fontWeight: fontWeight.extrabold,
     textTransform: 'uppercase',
+    letterSpacing: tracking.wide,
   },
   list: {
     paddingBottom: spacing.lg,

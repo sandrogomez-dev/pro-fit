@@ -1,30 +1,33 @@
 /**
  * Color tokens. Dark mode by default (AGENTS.md §9).
- * Never hardcode a color in a component — import from here.
+ * Aesthetic: athletic & energetic — deep near-black surfaces, electric-lime accent,
+ * high contrast. Never hardcode a color in a component — import from here.
  */
 export const colors = {
   // Surfaces
-  background: '#0B0B0F',
-  surface: '#15151C',
-  surfaceElevated: '#1F1F2A',
-  border: '#2A2A38',
+  background: '#0A0B0D',
+  surface: '#141619',
+  surfaceElevated: '#1C1F24',
+  border: '#2A2E36',
 
-  // Brand / accent
-  accent: '#7C5CFF',
-  accentMuted: '#4B3A99',
+  // Brand / accent — electric lime. Use textInverse for text/icons on top of it.
+  accent: '#C6FF00',
+  accentMuted: '#3F4A14',
+  accentDim: '#9ACB00',
 
   // Semantic
-  success: '#22C55E', // the green "done" check
-  danger: '#EF4444',
-  warning: '#F59E0B',
+  success: '#3DDC84', // the green "done" check
+  danger: '#FF4D4D',
+  warning: '#FFB020',
 
   // Text
-  text: '#F5F5F7',
-  textMuted: '#A1A1B5',
-  textInverse: '#0B0B0F',
+  text: '#F7F9FB',
+  textMuted: '#888F9C',
+  textFaint: '#5A616C',
+  textInverse: '#0A0B0D',
 
   // Misc
-  overlay: 'rgba(0, 0, 0, 0.6)',
+  overlay: 'rgba(0, 0, 0, 0.7)',
   transparent: 'transparent',
 } as const;
 

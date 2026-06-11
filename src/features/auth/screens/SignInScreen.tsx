@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { Button, Screen, TextField } from '@/components';
 import { authService } from '@/services';
-import { colors, fontSize, fontWeight, spacing } from '@/theme';
+import { colors, fontSize, fontWeight, spacing, tracking } from '@/theme';
 
 /**
  * Email/password sign-in. On success the auth listener flips the session and the
@@ -36,6 +36,7 @@ export function SignInScreen() {
     <Screen>
       <View style={styles.container}>
         <View style={styles.header}>
+          <Text style={styles.brand}>PROFIT</Text>
           <Text style={styles.title}>Welcome back</Text>
           <Text style={styles.subtitle}>Sign in to keep training.</Text>
         </View>
@@ -83,10 +84,18 @@ const styles = StyleSheet.create({
   header: {
     gap: spacing.sm,
   },
+  brand: {
+    color: colors.accent,
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.black,
+    letterSpacing: tracking.wider,
+    marginBottom: spacing.xs,
+  },
   title: {
     color: colors.text,
-    fontSize: fontSize.xl,
-    fontWeight: fontWeight.bold,
+    fontSize: fontSize.hero,
+    fontWeight: fontWeight.black,
+    letterSpacing: tracking.tight,
   },
   subtitle: {
     color: colors.textMuted,

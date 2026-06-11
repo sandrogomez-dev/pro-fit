@@ -6,7 +6,15 @@ import {
   type ViewStyle,
 } from 'react-native';
 
-import { colors, fontSize, fontWeight, minTapTarget, radius, spacing } from '@/theme';
+import {
+  colors,
+  fontSize,
+  fontWeight,
+  minTapTarget,
+  radius,
+  spacing,
+  tracking,
+} from '@/theme';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost';
 
@@ -20,8 +28,8 @@ interface ButtonProps {
 }
 
 /**
- * Themed pressable. Presentational only (AGENTS.md §8). Meets the large tap-target
- * requirement (AGENTS.md §9) via `minTapTarget`.
+ * Athletic, high-contrast pressable. Uppercase label with wide tracking.
+ * Presentational only (AGENTS.md §8). Meets the large tap-target rule (AGENTS.md §9).
  */
 export function Button({
   title,
@@ -48,7 +56,12 @@ export function Button({
       {loading ? (
         <ActivityIndicator color={variant === 'primary' ? colors.textInverse : colors.text} />
       ) : (
-        <Text style={[styles.label, variant === 'primary' && styles.labelPrimary]}>
+        <Text
+          style={[
+            styles.label,
+            variant === 'primary' ? styles.labelPrimary : styles.labelDefault,
+          ]}
+        >
           {title}
         </Text>
       )}
@@ -76,17 +89,22 @@ const styles = StyleSheet.create({
     backgroundColor: colors.transparent,
   },
   pressed: {
-    opacity: 0.8,
+    opacity: 0.85,
+    transform: [{ scale: 0.985 }],
   },
   disabled: {
-    opacity: 0.5,
+    opacity: 0.4,
   },
   label: {
-    color: colors.text,
-    fontSize: fontSize.md,
-    fontWeight: fontWeight.semibold,
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.extrabold,
+    letterSpacing: tracking.wider,
+    textTransform: 'uppercase',
   },
   labelPrimary: {
     color: colors.textInverse,
+  },
+  labelDefault: {
+    color: colors.text,
   },
 });
