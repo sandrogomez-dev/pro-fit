@@ -1,9 +1,9 @@
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Alert, FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 
-import { Button, Screen, TextField } from '@/components';
+import { Button, Screen, TextField, confirm, notify } from '@/components';
 import {
   FREE_ROUTINE_LIMIT,
   selectActiveRoutines,
@@ -40,7 +40,7 @@ export function RoutinesListScreen() {
     if (trimmed === '') return;
     const id = createRoutine(trimmed);
     if (id === null) {
-      Alert.alert(
+      notify(
         'Routine limit reached',
         `The free plan allows ${FREE_ROUTINE_LIMIT} routines. Go premium for unlimited.`,
       );
@@ -50,10 +50,15 @@ export function RoutinesListScreen() {
   };
 
   const onDelete = (id: string, routineName: string) => {
-    Alert.alert('Delete routine', `Delete "${routineName}" and its exercises?`, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => deleteRoutine(id) },
-    ]);
+    confirm(
+      {
+        title: 'Delete routine',
+        message: `Delete "${routineName}" and its exercises?`,
+        confirmLabel: 'Delete',
+        destructive: true,
+      },
+      () => deleteRoutine(id),
+    );
   };
 
   return (
