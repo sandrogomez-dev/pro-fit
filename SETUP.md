@@ -50,8 +50,10 @@ are not surprised later.
 ## 6. Current status (kept up to date by the agent)
 
 - [x] DeepSeek API key obtained.
-- [ ] Supabase project created (URL + anon key) — **pending, blocks running against the backend**.
+- [x] Supabase project created — project ref `egavonzmckgbhqdiuykw`, EU region.
+      URL + publishable key live in `.env` (uncommitted). Connectivity verified.
 - [ ] App name + bundle id — provisional in use, brand TBD.
 
-While Supabase is pending, the app is scaffolded with `.env.example` placeholders and
-the backend (migrations, auth, AI edge function) stays stubbed/deferred.
+Note: the project uses Supabase's **new publishable key** (`sb_publishable_...`) in
+`EXPO_PUBLIC_SUPABASE_ANON_KEY`, not the legacy anon JWT. Both work; the new one is
+Supabase's recommended format. The secret/`service_role` key is NEVER in the app.
