@@ -1,11 +1,13 @@
 import { Stack } from 'expo-router';
 
 import { useRoutinesSync } from '@/features/routines';
+import { useWorkoutSync } from '@/features/workouts';
 import { colors, fontWeight } from '@/theme';
 
-/** Stack for the authenticated app. Drives routines sync while mounted. */
+/** Stack for the authenticated app. Drives local-first sync while mounted. */
 export default function AppLayout() {
   useRoutinesSync();
+  useWorkoutSync();
 
   return (
     <Stack
@@ -22,6 +24,7 @@ export default function AppLayout() {
     >
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="routine/[id]" options={{ title: 'Routine' }} />
+      <Stack.Screen name="workout/[routineId]" options={{ title: 'Workout' }} />
     </Stack>
   );
 }

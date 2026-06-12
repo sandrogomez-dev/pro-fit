@@ -1,4 +1,4 @@
-import type { Exercise, Routine } from './database';
+import type { Exercise, Routine, WorkoutLog } from './database';
 
 /**
  * Local-first sync metadata attached to every locally-stored entity.
@@ -17,6 +17,7 @@ export interface SyncMeta {
 
 export type LocalRoutine = Routine & SyncMeta;
 export type LocalExercise = Exercise & SyncMeta;
+export type LocalWorkoutLog = WorkoutLog & SyncMeta;
 
 /** Strip local-only sync metadata to get the clean DB row shape. */
 export function toRemoteRoutine(r: LocalRoutine): Routine {
@@ -26,5 +27,10 @@ export function toRemoteRoutine(r: LocalRoutine): Routine {
 
 export function toRemoteExercise(e: LocalExercise): Exercise {
   const { pendingSync: _p, pendingDelete: _d, ...remote } = e;
+  return remote;
+}
+
+export function toRemoteWorkoutLog(l: LocalWorkoutLog): WorkoutLog {
+  const { pendingSync: _p, pendingDelete: _d, ...remote } = l;
   return remote;
 }

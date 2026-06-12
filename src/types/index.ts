@@ -7,5 +7,5 @@ export type {
   PersonalRecord,
   AiUsage,
 } from './database';
-export type { SyncMeta, LocalRoutine, LocalExercise } from './local';
-export { toRemoteRoutine, toRemoteExercise } from './local';
+export type { SyncMeta, LocalRoutine, LocalExercise, LocalWorkoutLog } from './local';
+export { toRemoteRoutine, toRemoteExercise, toRemoteWorkoutLog } from './local';

@@ -1,4 +1,4 @@
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
@@ -22,6 +22,7 @@ function parseOptionalInt(value: string): number | null {
 
 export function RoutineDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
   const routine = useRoutinesStore(selectRoutineById(id));
   const exercises = useRoutinesStore(useShallow(selectExercisesForRoutine(id)));
   const renameRoutine = useRoutinesStore((s) => s.renameRoutine);
@@ -70,6 +71,17 @@ export function RoutineDetailScreen() {
               onChangeText={(text) => renameRoutine(routine.id, text)}
               autoCapitalize="sentences"
             />
+            {exercises.length > 0 && (
+              <Button
+                title="Start workout"
+                onPress={() =>
+                  router.push({
+                    pathname: '/workout/[routineId]',
+                    params: { routineId: routine.id },
+                  })
+                }
+              />
+            )}
             <Text style={styles.sectionTitle}>Exercises</Text>
           </View>
         }

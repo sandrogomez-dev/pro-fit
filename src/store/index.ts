@@ -10,3 +10,8 @@ export {
   selectRoutineById,
   selectCanCreateRoutine,
 } from './routinesStore';
+export {
+  useWorkoutStore,
+  selectSession,
+  selectSessionSetsForExercise,
+} from './workoutStore';

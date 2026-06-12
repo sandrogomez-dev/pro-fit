@@ -15,4 +15,5 @@ Planned MVP features (AGENTS.md §3):
 Shared, presentational UI goes in `/src/components`; shared logic in `/src/hooks`.
 
 Built so far: `auth` (email sign-in/up), `routines` (routines & exercises CRUD,
-local-first). Remaining MVP features are still to come.
+local-first), `workouts` (log sets with reps/weight + green done check, local-first).
+Remaining MVP features (timer, prs, ai-substitution) are still to come.

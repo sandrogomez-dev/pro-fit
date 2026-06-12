@@ -8,4 +8,5 @@ Local-first, on-device-persisted global state (Zustand + AsyncStorage).
 - Keep slices small and per-domain (e.g. `useWorkoutStore`, `useTimerStore`).
 
 Slices: `authStore` (session + profile/premium), `routinesStore` (routines &
-exercises, local-first + persisted + sync). More land with their features.
+exercises), `workoutStore` (workout sessions + logged sets) — both local-first,
+persisted, synced via the generic engine. `syncMerge` holds the shared merge logic.

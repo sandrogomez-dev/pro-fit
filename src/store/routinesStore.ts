@@ -2,10 +2,31 @@ import { randomUUID } from 'expo-crypto';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import { appStorage, isSupabaseConfigured, syncRoutines } from '@/services';
-import type { LocalExercise, LocalRoutine, SyncMeta } from '@/types';
+import {
+  appStorage,
+  isOnline,
+  isSupabaseConfigured,
+  pushAndPull,
+  routinesApi,
+  type EntityRemote,
+} from '@/services';
+import type { Exercise, LocalExercise, LocalRoutine, Routine } from '@/types';
+import { toRemoteExercise, toRemoteRoutine } from '@/types';
 
 import { useAuthStore } from './authStore';
+import { mergeAfterSync } from './syncMerge';
+
+const routinesRemote: EntityRemote<Routine> = {
+  fetchAll: routinesApi.fetchRoutines,
+  upsert: routinesApi.upsertRoutine,
+  remove: routinesApi.deleteRoutine,
+};
+
+const exercisesRemote: EntityRemote<Exercise> = {
+  fetchAll: routinesApi.fetchExercises,
+  upsert: routinesApi.upsertExercise,
+  remove: routinesApi.deleteExercise,
+};
 
 /** Free tier is capped at 3 routines; premium is unlimited (AGENTS.md §3). */
 export const FREE_ROUTINE_LIMIT = 3;
@@ -36,18 +57,6 @@ interface RoutinesState {
   runSync: () => Promise<void>;
   reset: () => void;
   _setHydrated: () => void;
-}
-
-/** Keep server truth, plus any local items created/changed AFTER the synced snapshot. */
-function mergeAfterSync<T extends { id: string } & SyncMeta>(
-  serverTruth: T[],
-  current: T[],
-  snapshotIds: Set<string>,
-): T[] {
-  const newcomers = current.filter(
-    (item) => !snapshotIds.has(item.id) && (item.pendingSync || item.pendingDelete),
-  );
-  return [...serverTruth, ...newcomers];
 }
 
 export const useRoutinesStore = create<RoutinesState>()(
@@ -153,17 +162,16 @@ export const useRoutinesStore = create<RoutinesState>()(
 
         set({ syncing: true, lastSyncError: null });
         try {
-          const outcome = await syncRoutines({
-            routines: snapRoutines,
-            exercises: snapExercises,
-          });
-          if (!outcome.synced) {
+          if (!(await isOnline())) {
             set({ syncing: false }); // offline — try again later
             return;
           }
+          // Routines before exercises so a server cascade-delete is reflected on pull.
+          const serverRoutines = await pushAndPull(snapRoutines, routinesRemote, toRemoteRoutine);
+          const serverExercises = await pushAndPull(snapExercises, exercisesRemote, toRemoteExercise);
           set((s) => ({
-            routines: mergeAfterSync(outcome.serverRoutines, s.routines, snapRoutineIds),
-            exercises: mergeAfterSync(outcome.serverExercises, s.exercises, snapExerciseIds),
+            routines: mergeAfterSync(serverRoutines, s.routines, snapRoutineIds),
+            exercises: mergeAfterSync(serverExercises, s.exercises, snapExerciseIds),
             syncing: false,
           }));
         } catch (e) {

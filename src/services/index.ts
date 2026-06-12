@@ -10,4 +10,5 @@ export { isOnline, subscribeConnectivity } from './connectivity';
 export * as authService from './auth';
 export * as profileService from './profile';
 export * as routinesApi from './routines';
-export { syncRoutines, type SyncSnapshot, type SyncOutcome } from './sync';
+export * as workoutsApi from './workouts';
+export { pushAndPull, type EntityRemote } from './sync';
