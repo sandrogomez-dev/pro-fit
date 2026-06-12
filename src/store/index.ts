@@ -15,3 +15,4 @@ export {
   selectSession,
   selectSessionSetsForExercise,
 } from './workoutStore';
+export { useTimerStore, DEFAULT_REST_SECONDS } from './timerStore';

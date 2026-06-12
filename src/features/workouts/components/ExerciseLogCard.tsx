@@ -12,7 +12,7 @@ interface ExerciseLogCardProps {
   sets: LocalWorkoutLog[];
   onAddSet: () => void;
   onCommitSet: (logId: string, values: { reps: number; weight: number }) => void;
-  onToggleDone: (logId: string) => void;
+  onToggleDone: (logId: string, currentlyDone: boolean) => void;
   onDeleteSet: (logId: string) => void;
 }
 
@@ -65,7 +65,7 @@ export function ExerciseLogCard({
             weight={s.weight}
             done={s.done}
             onCommit={(values) => onCommitSet(s.id, values)}
-            onToggleDone={() => onToggleDone(s.id)}
+            onToggleDone={() => onToggleDone(s.id, s.done)}
             onDelete={() => onDeleteSet(s.id)}
           />
         ))}

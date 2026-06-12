@@ -12,3 +12,5 @@ export * as profileService from './profile';
 export * as routinesApi from './routines';
 export * as workoutsApi from './workouts';
 export { pushAndPull, type EntityRemote } from './sync';
+export { scheduleRestNotification, cancelNotification } from './notifications';
+export { restEndHaptic } from './haptics';

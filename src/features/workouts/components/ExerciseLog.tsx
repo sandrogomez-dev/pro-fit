@@ -1,6 +1,6 @@
 import { useShallow } from 'zustand/react/shallow';
 
-import { selectSessionSetsForExercise, useWorkoutStore } from '@/store';
+import { selectSessionSetsForExercise, useTimerStore, useWorkoutStore } from '@/store';
 import type { LocalExercise } from '@/types';
 
 import { ExerciseLogCard } from './ExerciseLogCard';
@@ -16,6 +16,8 @@ export function ExerciseLog({ exercise }: { exercise: LocalExercise }) {
   const updateSet = useWorkoutStore((s) => s.updateSet);
   const toggleDone = useWorkoutStore((s) => s.toggleDone);
   const deleteSet = useWorkoutStore((s) => s.deleteSet);
+  const startTimer = useTimerStore((s) => s.start);
+  const cancelTimer = useTimerStore((s) => s.cancel);
 
   const onAddSet = () => {
     const last = sets[sets.length - 1];
@@ -23,6 +25,13 @@ export function ExerciseLog({ exercise }: { exercise: LocalExercise }) {
       reps: last?.reps ?? exercise.target_reps ?? 0,
       weight: last?.weight ?? 0,
     });
+  };
+
+  // Marking a set done starts the rest timer; un-checking cancels it (AGENTS.md §13).
+  const onToggleDone = (logId: string, currentlyDone: boolean) => {
+    toggleDone(logId);
+    if (currentlyDone) cancelTimer();
+    else startTimer();
   };
 
   return (
@@ -33,7 +42,7 @@ export function ExerciseLog({ exercise }: { exercise: LocalExercise }) {
       sets={sets}
       onAddSet={onAddSet}
       onCommitSet={updateSet}
-      onToggleDone={toggleDone}
+      onToggleDone={onToggleDone}
       onDeleteSet={deleteSet}
     />
   );
