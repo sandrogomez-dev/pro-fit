@@ -5,76 +5,136 @@ import {
   appStorage,
   cancelNotification,
   restEndHaptic,
-  scheduleRestNotification,
+  scheduleTimerNotification,
+  type TimerPhase,
 } from '@/services';
 
 export const DEFAULT_REST_SECONDS = 90;
-const MIN_REST_SECONDS = 5;
+const MIN_SECONDS = 5;
 
 interface TimerState {
   active: boolean;
-  /** Epoch ms when the rest ends. The countdown is derived from this. */
+  phase: TimerPhase | null;
+  /** Epoch ms when the current phase ends. The countdown is derived from this. */
   endsAt: number | null;
-  /** Duration of the current/last rest, for the progress ring. */
+  /** Duration of the current phase, for the progress ring. */
   durationSeconds: number;
-  /** Id of the scheduled local notification (the source of truth for expiry). */
-  notificationId: string | null;
+  /** Rest to chain after a work phase (seconds), or null. */
+  nextRestSeconds: number | null;
+  /** Ids of the scheduled local notifications (the source of truth for expiry). */
+  notificationIds: string[];
+  hydrated: boolean;
 
-  start: (seconds?: number) => void;
+  /** Start a rest (e.g. after marking a set done). */
+  startRest: (seconds?: number) => void;
+  /** Start a timed work phase that auto-chains into rest (AGENTS.md §13). */
+  startWork: (workSeconds: number, restSeconds: number) => void;
   addTime: (deltaSeconds: number) => void;
   cancel: () => void;
   /** Called by the UI when the foreground countdown reaches zero. */
   expire: () => void;
   _setHydrated: () => void;
-  hydrated: boolean;
 }
 
 export const useTimerStore = create<TimerState>()(
   persist(
     (set, get) => {
-      // (Re)schedule the notification for `seconds` from now, storing its id only if
-      // this is still the active timer with the expected end time.
-      function reschedule(endsAt: number, seconds: number): void {
-        const previous = get().notificationId;
-        if (previous) void cancelNotification(previous);
-        set({ notificationId: null });
-        void scheduleRestNotification(seconds).then((id) => {
-          if (id && get().active && get().endsAt === endsAt) set({ notificationId: id });
+      async function cancelAll(ids: string[]): Promise<void> {
+        await Promise.all(ids.map(cancelNotification));
+      }
+
+      // Cancel any pending notifications, then (re)schedule for the given state and
+      // store the ids if this is still the active timer with the same end time.
+      function scheduleFor(endsAt: number, phase: TimerPhase, nextRest: number | null): void {
+        void cancelAll(get().notificationIds);
+        set({ notificationIds: [] });
+
+        const firstSeconds = Math.round((endsAt - Date.now()) / 1000);
+        const jobs: Promise<string | null>[] = [scheduleTimerNotification(firstSeconds, phase)];
+        if (phase === 'work' && nextRest != null) {
+          jobs.push(scheduleTimerNotification(firstSeconds + nextRest, 'rest'));
+        }
+
+        void Promise.all(jobs).then((ids) => {
+          const valid = ids.filter((id): id is string => id != null);
+          if (get().active && get().endsAt === endsAt) set({ notificationIds: valid });
         });
       }
 
       return {
         active: false,
+        phase: null,
         endsAt: null,
         durationSeconds: DEFAULT_REST_SECONDS,
-        notificationId: null,
+        nextRestSeconds: null,
+        notificationIds: [],
         hydrated: false,
 
-        start: (seconds) => {
-          const duration = Math.max(MIN_REST_SECONDS, seconds ?? get().durationSeconds);
-          const endsAt = Date.now() + duration * 1000;
-          set({ active: true, endsAt, durationSeconds: duration });
-          reschedule(endsAt, duration);
+        startRest: (seconds) => {
+          const rest = Math.max(MIN_SECONDS, seconds ?? DEFAULT_REST_SECONDS);
+          const endsAt = Date.now() + rest * 1000;
+          set({
+            active: true,
+            phase: 'rest',
+            endsAt,
+            durationSeconds: rest,
+            nextRestSeconds: null,
+          });
+          scheduleFor(endsAt, 'rest', null);
+        },
+
+        startWork: (workSeconds, restSeconds) => {
+          const work = Math.max(MIN_SECONDS, workSeconds);
+          const rest = Math.max(MIN_SECONDS, restSeconds);
+          const endsAt = Date.now() + work * 1000;
+          set({
+            active: true,
+            phase: 'work',
+            endsAt,
+            durationSeconds: work,
+            nextRestSeconds: rest,
+          });
+          scheduleFor(endsAt, 'work', rest);
         },
 
         addTime: (deltaSeconds) => {
           const current = get().endsAt;
-          if (!get().active || current == null) return;
-          const endsAt = Math.max(Date.now() + MIN_REST_SECONDS * 1000, current + deltaSeconds * 1000);
+          const phase = get().phase;
+          if (!get().active || current == null || phase == null) return;
+          const endsAt = Math.max(Date.now() + MIN_SECONDS * 1000, current + deltaSeconds * 1000);
           set({ endsAt });
-          reschedule(endsAt, Math.round((endsAt - Date.now()) / 1000));
+          scheduleFor(endsAt, phase, get().nextRestSeconds);
         },
 
         cancel: () => {
-          const previous = get().notificationId;
-          if (previous) void cancelNotification(previous);
-          set({ active: false, endsAt: null, notificationId: null });
+          void cancelAll(get().notificationIds);
+          set({
+            active: false,
+            phase: null,
+            endsAt: null,
+            nextRestSeconds: null,
+            notificationIds: [],
+          });
         },
 
         expire: () => {
-          // The notification already fired (handles the locked case). In the
-          // foreground we add a haptic and clear the on-screen bar.
-          set({ active: false, endsAt: null, notificationId: null });
+          // The matching notification already fired (handles the locked case).
+          const { phase, nextRestSeconds } = get();
+          if (phase === 'work' && nextRestSeconds != null) {
+            // Chain into rest. The rest notification was scheduled up front, so it
+            // still fires correctly even if we were locked — just update the UI.
+            const endsAt = Date.now() + nextRestSeconds * 1000;
+            set({
+              phase: 'rest',
+              endsAt,
+              durationSeconds: nextRestSeconds,
+              nextRestSeconds: null,
+            });
+            void restEndHaptic();
+            return;
+          }
+          void cancelAll(get().notificationIds);
+          set({ active: false, phase: null, endsAt: null, notificationIds: [] });
           void restEndHaptic();
         },
 
@@ -85,18 +145,21 @@ export const useTimerStore = create<TimerState>()(
       name: 'timer-store',
       storage: createJSONStorage(() => appStorage),
       partialize: (s) => ({
-        durationSeconds: s.durationSeconds,
         active: s.active,
+        phase: s.phase,
         endsAt: s.endsAt,
-        notificationId: s.notificationId,
+        durationSeconds: s.durationSeconds,
+        nextRestSeconds: s.nextRestSeconds,
+        notificationIds: s.notificationIds,
       }),
       onRehydrateStorage: () => (state) => {
         if (!state) return;
-        // Drop a timer that already elapsed while the app was closed.
         if (state.active && (state.endsAt == null || state.endsAt <= Date.now())) {
           state.active = false;
+          state.phase = null;
           state.endsAt = null;
-          state.notificationId = null;
+          state.nextRestSeconds = null;
+          state.notificationIds = [];
         }
         state._setHydrated();
       },

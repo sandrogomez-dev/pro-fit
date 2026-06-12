@@ -14,6 +14,8 @@ interface ExerciseLogCardProps {
   onCommitSet: (logId: string, values: { reps: number; weight: number }) => void;
   onToggleDone: (logId: string, currentlyDone: boolean) => void;
   onDeleteSet: (logId: string) => void;
+  /** Provided only for timed exercises — starts the work→rest cycle for a set. */
+  onStartSet?: () => void;
 }
 
 function targetLabel(sets: number | null, reps: number | null): string | null {
@@ -33,6 +35,7 @@ export function ExerciseLogCard({
   onCommitSet,
   onToggleDone,
   onDeleteSet,
+  onStartSet,
 }: ExerciseLogCardProps) {
   const target = targetLabel(targetSets, targetReps);
   const doneCount = sets.filter((s) => s.done).length;
@@ -67,6 +70,7 @@ export function ExerciseLogCard({
             onCommit={(values) => onCommitSet(s.id, values)}
             onToggleDone={() => onToggleDone(s.id, s.done)}
             onDelete={() => onDeleteSet(s.id)}
+            onStart={onStartSet}
           />
         ))}
       </View>

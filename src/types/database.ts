@@ -30,6 +30,10 @@ export interface Exercise {
   target_sets: number | null;
   target_reps: number | null;
   order: number;
+  /** Optional timed work phase, in seconds. null = untimed set. */
+  work_seconds: number | null;
+  /** Rest phase after a set, in seconds. null = use the app default. */
+  rest_seconds: number | null;
 }
 
 export interface WorkoutLog {

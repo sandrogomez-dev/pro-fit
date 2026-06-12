@@ -35,9 +35,13 @@ interface NewExerciseInput {
   name: string;
   target_sets?: number | null;
   target_reps?: number | null;
+  work_seconds?: number | null;
+  rest_seconds?: number | null;
 }
 
-type ExercisePatch = Partial<Pick<LocalExercise, 'name' | 'target_sets' | 'target_reps'>>;
+type ExercisePatch = Partial<
+  Pick<LocalExercise, 'name' | 'target_sets' | 'target_reps' | 'work_seconds' | 'rest_seconds'>
+>;
 
 interface RoutinesState {
   routines: LocalRoutine[];
@@ -127,6 +131,8 @@ export const useRoutinesStore = create<RoutinesState>()(
           target_sets: input.target_sets ?? null,
           target_reps: input.target_reps ?? null,
           order,
+          work_seconds: input.work_seconds ?? null,
+          rest_seconds: input.rest_seconds ?? null,
           pendingSync: true,
           pendingDelete: false,
         };
@@ -211,6 +217,11 @@ export const selectRoutineById =
   (routineId: string) =>
   (s: RoutinesState): LocalRoutine | undefined =>
     s.routines.find((r) => r.id === routineId && !r.pendingDelete);
+
+export const selectExerciseById =
+  (exerciseId: string) =>
+  (s: RoutinesState): LocalExercise | undefined =>
+    s.exercises.find((e) => e.id === exerciseId && !e.pendingDelete);
 
 function canCreateRoutine(routines: LocalRoutine[]): boolean {
   const { isPremium } = useAuthStore.getState();

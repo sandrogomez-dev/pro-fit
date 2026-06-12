@@ -8,6 +8,7 @@ export {
   selectActiveRoutines,
   selectExercisesForRoutine,
   selectRoutineById,
+  selectExerciseById,
   selectCanCreateRoutine,
 } from './routinesStore';
 export {

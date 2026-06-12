@@ -11,6 +11,8 @@ interface SetRowProps {
   onCommit: (values: { reps: number; weight: number }) => void;
   onToggleDone: () => void;
   onDelete: () => void;
+  /** Provided only for timed exercises — starts this set's work→rest timer. */
+  onStart?: () => void;
 }
 
 function toInt(value: string): number {
@@ -36,6 +38,7 @@ export function SetRow({
   onCommit,
   onToggleDone,
   onDelete,
+  onStart,
 }: SetRowProps) {
   const [repsText, setRepsText] = useState(String(reps));
   const [weightText, setWeightText] = useState(String(weight));
@@ -46,7 +49,13 @@ export function SetRow({
 
   return (
     <View style={[styles.row, done && styles.rowDone]}>
-      <Text style={styles.setNumber}>{setNumber}</Text>
+      {onStart ? (
+        <Pressable onPress={onStart} hitSlop={spacing.sm} style={styles.start}>
+          <Text style={styles.startText}>▶</Text>
+        </Pressable>
+      ) : (
+        <Text style={styles.setNumber}>{setNumber}</Text>
+      )}
 
       <View style={styles.field}>
         <TextInput
@@ -115,6 +124,15 @@ const styles = StyleSheet.create({
     fontWeight: fontWeight.extrabold,
     width: 18,
     textAlign: 'center',
+  },
+  start: {
+    width: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  startText: {
+    color: colors.accent,
+    fontSize: fontSize.sm,
   },
   field: {
     flex: 1,

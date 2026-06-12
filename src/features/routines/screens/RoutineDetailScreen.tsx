@@ -93,6 +93,7 @@ export function RoutineDetailScreen() {
             name={item.name}
             targetSets={item.target_sets}
             targetReps={item.target_reps}
+            onPress={() => router.push({ pathname: '/exercise/[id]', params: { id: item.id } })}
             onDelete={() => deleteExercise(item.id)}
           />
         )}

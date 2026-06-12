@@ -1,6 +1,11 @@
 import { useShallow } from 'zustand/react/shallow';
 
-import { selectSessionSetsForExercise, useTimerStore, useWorkoutStore } from '@/store';
+import {
+  DEFAULT_REST_SECONDS,
+  selectSessionSetsForExercise,
+  useTimerStore,
+  useWorkoutStore,
+} from '@/store';
 import type { LocalExercise } from '@/types';
 
 import { ExerciseLogCard } from './ExerciseLogCard';
@@ -16,8 +21,13 @@ export function ExerciseLog({ exercise }: { exercise: LocalExercise }) {
   const updateSet = useWorkoutStore((s) => s.updateSet);
   const toggleDone = useWorkoutStore((s) => s.toggleDone);
   const deleteSet = useWorkoutStore((s) => s.deleteSet);
-  const startTimer = useTimerStore((s) => s.start);
+  const startRest = useTimerStore((s) => s.startRest);
+  const startWork = useTimerStore((s) => s.startWork);
   const cancelTimer = useTimerStore((s) => s.cancel);
+
+  const workSeconds = exercise.work_seconds ?? 0;
+  const restSeconds = exercise.rest_seconds ?? DEFAULT_REST_SECONDS;
+  const hasWork = workSeconds > 0;
 
   const onAddSet = () => {
     const last = sets[sets.length - 1];
@@ -27,12 +37,16 @@ export function ExerciseLog({ exercise }: { exercise: LocalExercise }) {
     });
   };
 
-  // Marking a set done starts the rest timer; un-checking cancels it (AGENTS.md §13).
+  // Timed exercises are driven by the ▶ Start (work → rest). For untimed ones,
+  // marking a set done starts the rest timer; un-checking cancels it (AGENTS.md §13).
   const onToggleDone = (logId: string, currentlyDone: boolean) => {
     toggleDone(logId);
+    if (hasWork) return;
     if (currentlyDone) cancelTimer();
-    else startTimer();
+    else startRest(restSeconds);
   };
+
+  const onStartSet = hasWork ? () => startWork(workSeconds, restSeconds) : undefined;
 
   return (
     <ExerciseLogCard
@@ -44,6 +58,7 @@ export function ExerciseLog({ exercise }: { exercise: LocalExercise }) {
       onCommitSet={updateSet}
       onToggleDone={onToggleDone}
       onDeleteSet={deleteSet}
+      onStartSet={onStartSet}
     />
   );
 }

@@ -27,6 +27,7 @@ export default function AppLayout() {
       >
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="routine/[id]" options={{ title: 'Routine' }} />
+        <Stack.Screen name="exercise/[id]" options={{ title: 'Exercise' }} />
         <Stack.Screen name="workout/[routineId]" options={{ title: 'Workout' }} />
       </Stack>
       <RestTimerBar />

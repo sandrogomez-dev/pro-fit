@@ -47,15 +47,21 @@ async function ensureReady(): Promise<boolean> {
   return permissionGranted;
 }
 
-/** Schedule the "rest over" notification `seconds` from now. Returns its id, or null. */
-export async function scheduleRestNotification(seconds: number): Promise<string | null> {
+export type TimerPhase = 'work' | 'rest';
+
+const CONTENT: Record<TimerPhase, { title: string; body: string }> = {
+  work: { title: 'Work done 💪', body: 'Time to rest.' },
+  rest: { title: 'Rest over 💪', body: 'Time for your next set.' },
+};
+
+/** Schedule a timer notification `seconds` from now. Returns its id, or null. */
+export async function scheduleTimerNotification(
+  seconds: number,
+  phase: TimerPhase,
+): Promise<string | null> {
   if (!(await ensureReady())) return null;
   return Notifications.scheduleNotificationAsync({
-    content: {
-      title: 'Rest over 💪',
-      body: 'Time for your next set.',
-      sound: 'default',
-    },
+    content: { ...CONTENT[phase], sound: 'default' },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
       seconds: Math.max(1, Math.round(seconds)),

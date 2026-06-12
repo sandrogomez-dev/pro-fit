@@ -20,6 +20,7 @@ function format(totalSeconds: number): string {
 export function RestTimerBar() {
   const insets = useSafeAreaInsets();
   const active = useTimerStore((s) => s.active);
+  const phase = useTimerStore((s) => s.phase);
   const endsAt = useTimerStore((s) => s.endsAt);
   const durationSeconds = useTimerStore((s) => s.durationSeconds);
   const addTime = useTimerStore((s) => s.addTime);
@@ -48,17 +49,22 @@ export function RestTimerBar() {
   if (!active) return null;
 
   const fraction = Math.max(0, Math.min(1, remaining / durationSeconds));
+  const phaseColor = phase === 'work' ? colors.accent : colors.success;
 
   return (
     <View style={[styles.wrapper, { paddingBottom: insets.bottom + spacing.md }]}>
-      <View style={styles.bar}>
+      <View style={[styles.bar, { borderColor: phaseColor }]}>
         <View style={styles.progressTrack}>
-          <View style={[styles.progressFill, { width: `${fraction * 100}%` }]} />
+          <View
+            style={[styles.progressFill, { width: `${fraction * 100}%`, backgroundColor: phaseColor }]}
+          />
         </View>
 
         <View style={styles.row}>
           <View style={styles.timeBlock}>
-            <Text style={styles.label}>REST</Text>
+            <Text style={[styles.label, { color: phaseColor }]}>
+              {phase === 'work' ? 'WORK' : 'REST'}
+            </Text>
             <Text style={styles.time}>{format(remaining)}</Text>
           </View>
 
@@ -69,7 +75,7 @@ export function RestTimerBar() {
             <Pressable onPress={() => addTime(30)} hitSlop={spacing.sm} style={styles.adjust}>
               <Text style={styles.adjustText}>+30</Text>
             </Pressable>
-            <Pressable onPress={cancel} hitSlop={spacing.sm} style={styles.skip}>
+            <Pressable onPress={cancel} hitSlop={spacing.sm} style={[styles.skip, { backgroundColor: phaseColor }]}>
               <Text style={styles.skipText}>Skip</Text>
             </Pressable>
           </View>

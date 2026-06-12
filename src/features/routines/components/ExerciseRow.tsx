@@ -14,6 +14,7 @@ interface ExerciseRowProps {
   name: string;
   targetSets: number | null;
   targetReps: number | null;
+  onPress: () => void;
   onDelete: () => void;
 }
 
@@ -25,11 +26,11 @@ function targetLabel(sets: number | null, reps: number | null): string | null {
 }
 
 /** Athletic exercise row inside a routine. */
-export function ExerciseRow({ name, targetSets, targetReps, onDelete }: ExerciseRowProps) {
+export function ExerciseRow({ name, targetSets, targetReps, onPress, onDelete }: ExerciseRowProps) {
   const target = targetLabel(targetSets, targetReps);
 
   return (
-    <View style={styles.row}>
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.row, pressed && styles.pressed]}>
       <View style={styles.info}>
         <Text style={styles.name} numberOfLines={1}>
           {name}
@@ -47,7 +48,8 @@ export function ExerciseRow({ name, targetSets, targetReps, onDelete }: Exercise
       >
         <Text style={styles.deleteText}>Remove</Text>
       </Pressable>
-    </View>
+      <Text style={styles.chevron}>›</Text>
+    </Pressable>
   );
 }
 
@@ -96,5 +98,10 @@ const styles = StyleSheet.create({
     fontWeight: fontWeight.semibold,
     textTransform: 'uppercase',
     letterSpacing: tracking.wide,
+  },
+  chevron: {
+    color: colors.textFaint,
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.bold,
   },
 });
