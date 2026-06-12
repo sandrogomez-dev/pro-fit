@@ -14,6 +14,7 @@ export * as workoutsApi from './workouts';
 export { pushAndPull, type EntityRemote } from './sync';
 export {
   scheduleTimerNotification,
+  scheduleNotificationAt,
   cancelNotification,
   type TimerPhase,
 } from './notifications';

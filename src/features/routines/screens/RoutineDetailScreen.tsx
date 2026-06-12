@@ -4,6 +4,7 @@ import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 
 import { Button, Screen, TextField } from '@/components';
+import { CircuitSettings } from '@/features/circuit';
 import {
   selectExercisesForRoutine,
   selectRoutineById,
@@ -71,12 +72,13 @@ export function RoutineDetailScreen() {
               onChangeText={(text) => renameRoutine(routine.id, text)}
               autoCapitalize="sentences"
             />
+            <CircuitSettings routine={routine} />
             {exercises.length > 0 && (
               <Button
-                title="Start workout"
+                title="▶  Play workout"
                 onPress={() =>
                   router.push({
-                    pathname: '/workout/[routineId]',
+                    pathname: '/run/[routineId]',
                     params: { routineId: routine.id },
                   })
                 }

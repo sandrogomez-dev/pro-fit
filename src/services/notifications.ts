@@ -70,6 +70,23 @@ export async function scheduleTimerNotification(
   });
 }
 
+/** Schedule a custom notification `seconds` from now. Returns its id, or null. */
+export async function scheduleNotificationAt(
+  seconds: number,
+  title: string,
+  body: string,
+): Promise<string | null> {
+  if (!(await ensureReady())) return null;
+  return Notifications.scheduleNotificationAsync({
+    content: { title, body, sound: 'default' },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+      seconds: Math.max(1, Math.round(seconds)),
+      channelId: REST_CHANNEL,
+    },
+  });
+}
+
 export async function cancelNotification(id: string): Promise<void> {
   if (Platform.OS === 'web') return;
   try {

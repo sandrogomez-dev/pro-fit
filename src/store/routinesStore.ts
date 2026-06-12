@@ -43,6 +43,10 @@ type ExercisePatch = Partial<
   Pick<LocalExercise, 'name' | 'target_sets' | 'target_reps' | 'work_seconds' | 'rest_seconds'>
 >;
 
+type RoutinePatch = Partial<
+  Pick<LocalRoutine, 'name' | 'work_seconds' | 'rest_seconds' | 'rounds'>
+>;
+
 interface RoutinesState {
   routines: LocalRoutine[];
   exercises: LocalExercise[];
@@ -52,6 +56,7 @@ interface RoutinesState {
 
   createRoutine: (name: string) => string | null;
   renameRoutine: (id: string, name: string) => void;
+  updateRoutine: (id: string, patch: RoutinePatch) => void;
   deleteRoutine: (id: string) => void;
 
   addExercise: (routineId: string, input: NewExerciseInput) => void;
@@ -82,6 +87,9 @@ export const useRoutinesStore = create<RoutinesState>()(
           user_id: user.id,
           name: name.trim(),
           created_at: new Date().toISOString(),
+          work_seconds: null,
+          rest_seconds: null,
+          rounds: 1,
           pendingSync: true,
           pendingDelete: false,
         };
@@ -94,6 +102,15 @@ export const useRoutinesStore = create<RoutinesState>()(
         set((s) => ({
           routines: s.routines.map((r) =>
             r.id === id ? { ...r, name: name.trim(), pendingSync: true } : r,
+          ),
+        }));
+        void get().runSync();
+      },
+
+      updateRoutine: (id, patch) => {
+        set((s) => ({
+          routines: s.routines.map((r) =>
+            r.id === id ? { ...r, ...patch, pendingSync: true } : r,
           ),
         }));
         void get().runSync();

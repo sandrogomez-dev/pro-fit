@@ -21,6 +21,7 @@ interface TextFieldProps {
   autoComplete?: TextInputProps['autoComplete'];
   error?: string | null;
   editable?: boolean;
+  onBlur?: () => void;
 }
 
 /**
@@ -37,6 +38,7 @@ export function TextField({
   autoComplete,
   error,
   editable = true,
+  onBlur,
 }: TextFieldProps) {
   const [focused, setFocused] = useState(false);
 
@@ -60,7 +62,10 @@ export function TextField({
         autoComplete={autoComplete}
         editable={editable}
         onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
+        onBlur={() => {
+          setFocused(false);
+          onBlur?.();
+        }}
       />
       {error != null && <Text style={styles.errorText}>{error}</Text>}
     </View>

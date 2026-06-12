@@ -20,6 +20,10 @@ export interface Routine {
   user_id: string;
   name: string;
   created_at: string;
+  /** Guided-circuit settings. work/rest in seconds (null = use defaults). */
+  work_seconds: number | null;
+  rest_seconds: number | null;
+  rounds: number;
 }
 
 export interface Exercise {
