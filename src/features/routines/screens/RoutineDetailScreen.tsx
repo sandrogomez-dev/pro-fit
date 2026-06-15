@@ -14,13 +14,6 @@ import { colors, fontSize, fontWeight, spacing, tracking } from '@/theme';
 
 import { ExerciseRow } from '../components/ExerciseRow';
 
-function parseOptionalInt(value: string): number | null {
-  const trimmed = value.trim();
-  if (trimmed === '') return null;
-  const parsed = Number.parseInt(trimmed, 10);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
-}
-
 export function RoutineDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
@@ -31,8 +24,6 @@ export function RoutineDetailScreen() {
   const deleteExercise = useRoutinesStore((s) => s.deleteExercise);
 
   const [exName, setExName] = useState('');
-  const [sets, setSets] = useState('');
-  const [reps, setReps] = useState('');
 
   if (!routine) {
     return (
@@ -45,14 +36,8 @@ export function RoutineDetailScreen() {
   const onAddExercise = () => {
     const name = exName.trim();
     if (name === '') return;
-    addExercise(routine.id, {
-      name,
-      target_sets: parseOptionalInt(sets),
-      target_reps: parseOptionalInt(reps),
-    });
+    addExercise(routine.id, { name });
     setExName('');
-    setSets('');
-    setReps('');
   };
 
   return (
@@ -93,8 +78,6 @@ export function RoutineDetailScreen() {
         renderItem={({ item }) => (
           <ExerciseRow
             name={item.name}
-            targetSets={item.target_sets}
-            targetReps={item.target_reps}
             onPress={() => router.push({ pathname: '/exercise/[id]', params: { id: item.id } })}
             onDelete={() => deleteExercise(item.id)}
           />
@@ -106,29 +89,9 @@ export function RoutineDetailScreen() {
           label="Add exercise"
           value={exName}
           onChangeText={setExName}
-          placeholder="e.g. Bench press"
+          placeholder="e.g. Push-ups"
           autoCapitalize="sentences"
         />
-        <View style={styles.targetRow}>
-          <View style={styles.targetField}>
-            <TextField
-              label="Sets"
-              value={sets}
-              onChangeText={setSets}
-              placeholder="—"
-              keyboardType="number-pad"
-            />
-          </View>
-          <View style={styles.targetField}>
-            <TextField
-              label="Reps"
-              value={reps}
-              onChangeText={setReps}
-              placeholder="—"
-              keyboardType="number-pad"
-            />
-          </View>
-        </View>
         <Button title="Add exercise" onPress={onAddExercise} />
       </View>
     </Screen>
@@ -169,12 +132,5 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.lg,
     borderTopWidth: 1,
     borderTopColor: colors.border,
-  },
-  targetRow: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  targetField: {
-    flex: 1,
   },
 });

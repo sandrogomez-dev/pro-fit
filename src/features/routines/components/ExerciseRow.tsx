@@ -12,23 +12,12 @@ import {
 
 interface ExerciseRowProps {
   name: string;
-  targetSets: number | null;
-  targetReps: number | null;
   onPress: () => void;
   onDelete: () => void;
 }
 
-function targetLabel(sets: number | null, reps: number | null): string | null {
-  if (sets != null && reps != null) return `${sets} × ${reps}`;
-  if (sets != null) return `${sets} SETS`;
-  if (reps != null) return `${reps} REPS`;
-  return null;
-}
-
-/** Athletic exercise row inside a routine. */
-export function ExerciseRow({ name, targetSets, targetReps, onPress, onDelete }: ExerciseRowProps) {
-  const target = targetLabel(targetSets, targetReps);
-
+/** Exercise row inside a routine. Tap to edit (rename), trailing button to remove. */
+export function ExerciseRow({ name, onPress, onDelete }: ExerciseRowProps) {
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.row, pressed && styles.pressed]}>
       <View style={styles.info}>
@@ -36,11 +25,6 @@ export function ExerciseRow({ name, targetSets, targetReps, onPress, onDelete }:
           {name}
         </Text>
       </View>
-      {target != null && (
-        <View style={styles.targetChip}>
-          <Text style={styles.targetText}>{target}</Text>
-        </View>
-      )}
       <Pressable
         onPress={onDelete}
         hitSlop={spacing.md}
@@ -76,18 +60,6 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontSize: fontSize.md,
     fontWeight: fontWeight.semibold,
-  },
-  targetChip: {
-    backgroundColor: colors.accentMuted,
-    borderRadius: radius.sm,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-  },
-  targetText: {
-    color: colors.accent,
-    fontSize: fontSize.xs,
-    fontWeight: fontWeight.extrabold,
-    letterSpacing: tracking.wide,
   },
   delete: {
     paddingHorizontal: spacing.xs,

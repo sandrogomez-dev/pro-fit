@@ -26,7 +26,7 @@ export function buildCircuit(routine: LocalRoutine, exercises: LocalExercise[]):
         kind: 'work',
         exerciseId: exercise.id,
         exerciseName: exercise.name,
-        durationSeconds: exercise.work_seconds ?? work,
+        durationSeconds: work,
         round,
         totalRounds,
       });
