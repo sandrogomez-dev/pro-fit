@@ -72,9 +72,14 @@ export function RoutinesListScreen() {
             {!isPremium && <Text style={styles.countMax}> / {FREE_ROUTINE_LIMIT}</Text>}
           </Text>
         </View>
-        <Pressable onPress={() => void signOut()} hitSlop={spacing.md}>
-          <Text style={styles.signOut}>Sign out</Text>
-        </Pressable>
+        <View style={styles.headerActions}>
+          <Pressable onPress={() => router.push('/progress')} hitSlop={spacing.md}>
+            <Text style={styles.progressLink}>Progress</Text>
+          </Pressable>
+          <Pressable onPress={() => void signOut()} hitSlop={spacing.md}>
+            <Text style={styles.signOut}>Sign out</Text>
+          </Pressable>
+        </View>
       </View>
 
       <View style={styles.addRow}>
@@ -148,11 +153,20 @@ const styles = StyleSheet.create({
     color: colors.textFaint,
     fontWeight: fontWeight.semibold,
   },
+  headerActions: {
+    alignItems: 'flex-end',
+    gap: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  progressLink: {
+    color: colors.accent,
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.extrabold,
+  },
   signOut: {
     color: colors.textMuted,
     fontSize: fontSize.sm,
     fontWeight: fontWeight.semibold,
-    marginTop: spacing.sm,
   },
   addRow: {
     flexDirection: 'row',
