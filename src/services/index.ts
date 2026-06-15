@@ -11,6 +11,7 @@ export * as authService from './auth';
 export * as profileService from './profile';
 export * as routinesApi from './routines';
 export * as workoutsApi from './workouts';
+export * as sessionsApi from './sessions';
 export { pushAndPull, type EntityRemote } from './sync';
 export {
   scheduleTimerNotification,

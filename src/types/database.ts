@@ -66,3 +66,14 @@ export interface AiUsage {
   usage_date: string; // YYYY-MM-DD
   count: number;
 }
+
+export interface WorkoutSession {
+  id: string;
+  user_id: string;
+  routine_id: string | null;
+  routine_name: string;
+  started_at: string;
+  duration_seconds: number;
+  rounds: number;
+  completed: boolean;
+}

@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { View } from 'react-native';
 
+import { useSessionsSync } from '@/features/progress';
 import { useRoutinesSync } from '@/features/routines';
 import { RestTimerBar } from '@/features/timer';
 import { useWorkoutSync } from '@/features/workouts';
@@ -10,6 +11,7 @@ import { colors, fontWeight } from '@/theme';
 export default function AppLayout() {
   useRoutinesSync();
   useWorkoutSync();
+  useSessionsSync();
 
   return (
     <View style={{ flex: 1 }}>

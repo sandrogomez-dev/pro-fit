@@ -1,59 +1,48 @@
-import { useEffect, useMemo } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect } from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 
 import { Screen } from '@/components';
-import { useAuthStore, useRoutinesStore, useWorkoutStore } from '@/store';
+import { selectSessions, useAuthStore, useSessionsStore } from '@/store';
 import { colors, fontSize, fontWeight, spacing, tracking } from '@/theme';
 
-import { HistoryCard } from '../components/HistoryCard';
 import { PremiumGate } from '../components/PremiumGate';
-import { PrCard } from '../components/PrCard';
-import { derivePRs, deriveHistory } from '../derive';
+import { SessionCard } from '../components/SessionCard';
 
 export function ProgressScreen() {
   const isPremium = useAuthStore((s) => s.isPremium);
   const refreshProfile = useAuthStore((s) => s.refreshProfile);
-  const logs = useWorkoutStore(useShallow((s) => s.logs));
-  const exercises = useRoutinesStore(useShallow((s) => s.exercises));
+  const sessions = useSessionsStore(useShallow(selectSessions));
 
   // Pick up a manually-toggled is_premium without needing to re-login (MVP testing).
   useEffect(() => {
     void refreshProfile();
   }, [refreshProfile]);
 
-  const prs = useMemo(() => derivePRs(logs, exercises), [logs, exercises]);
-  const history = useMemo(() => deriveHistory(logs, exercises), [logs, exercises]);
-
   if (!isPremium) return <PremiumGate />;
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>PROGRESS</Text>
-
-        <Text style={styles.section}>Personal records</Text>
-        {prs.length === 0 ? (
-          <Text style={styles.empty}>Log some sets with weight to see your PRs.</Text>
-        ) : (
-          <View style={styles.list}>
-            {prs.map((entry) => (
-              <PrCard key={entry.exerciseId} entry={entry} />
-            ))}
+      <FlatList
+        data={sessions}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.content}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          <View style={styles.header}>
+            <Text style={styles.title}>HISTORY</Text>
+            <Text style={styles.subtitle}>Your training log</Text>
           </View>
-        )}
-
-        <Text style={styles.section}>History</Text>
-        {history.length === 0 ? (
-          <Text style={styles.empty}>Your logged workouts will show up here.</Text>
-        ) : (
-          <View style={styles.list}>
-            {history.map((day) => (
-              <HistoryCard key={day.date} day={day} />
-            ))}
+        }
+        ListEmptyComponent={
+          <View style={styles.empty}>
+            <Text style={styles.emptyTitle}>No workouts yet</Text>
+            <Text style={styles.emptyText}>Finish a circuit and it shows up here.</Text>
           </View>
-        )}
-      </ScrollView>
+        }
+        renderItem={({ item }) => <SessionCard session={item} />}
+      />
     </Screen>
   );
 }
@@ -61,7 +50,11 @@ export function ProgressScreen() {
 const styles = StyleSheet.create({
   content: {
     paddingVertical: spacing.xl,
-    gap: spacing.lg,
+    flexGrow: 1,
+  },
+  header: {
+    gap: spacing.xs,
+    marginBottom: spacing.xl,
   },
   title: {
     color: colors.text,
@@ -69,19 +62,26 @@ const styles = StyleSheet.create({
     fontWeight: fontWeight.black,
     letterSpacing: tracking.tight,
   },
-  section: {
-    color: colors.accent,
-    fontSize: fontSize.sm,
-    fontWeight: fontWeight.extrabold,
-    textTransform: 'uppercase',
-    letterSpacing: tracking.wide,
-    marginTop: spacing.md,
+  subtitle: {
+    color: colors.textMuted,
+    fontSize: fontSize.md,
   },
-  list: {
-    gap: spacing.md,
+  separator: {
+    height: spacing.md,
   },
   empty: {
+    alignItems: 'center',
+    marginTop: spacing.xxxl,
+    gap: spacing.sm,
+  },
+  emptyTitle: {
+    color: colors.text,
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.bold,
+  },
+  emptyText: {
     color: colors.textMuted,
     fontSize: fontSize.sm,
+    textAlign: 'center',
   },
 });

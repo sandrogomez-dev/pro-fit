@@ -18,3 +18,4 @@ export {
 } from './workoutStore';
 export { useTimerStore, DEFAULT_REST_SECONDS } from './timerStore';
 export { useCircuitStore, type CircuitStep } from './circuitStore';
+export { useSessionsStore, selectSessions } from './sessionsStore';
