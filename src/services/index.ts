@@ -20,3 +20,4 @@ export {
   type TimerPhase,
 } from './notifications';
 export { restEndHaptic } from './haptics';
+export { playTick, playGo, playDone, speak } from './sound';

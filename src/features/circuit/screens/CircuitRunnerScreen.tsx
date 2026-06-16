@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useKeepAwake } from 'expo-keep-awake';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -9,6 +9,7 @@ import { useCircuitStore, useRoutinesStore } from '@/store';
 import { colors, fontSize, fontWeight, radius, spacing, tracking } from '@/theme';
 
 import { buildCircuit } from '../buildCircuit';
+import { cueCountdown, cueDone, cueRest, cueWork } from '../cues';
 
 function format(totalSeconds: number): string {
   const s = Math.max(0, totalSeconds);
@@ -48,6 +49,24 @@ export function CircuitRunnerScreen() {
   }, [routineId, start, stop]);
 
   const [remaining, setRemaining] = useState(0);
+  const announcedRef = useRef(-1);
+  const lastTickRef = useRef(0);
+
+  // Announce each step once (voice/beep), honouring the audio mode.
+  useEffect(() => {
+    if (!running) return;
+    const step = steps[index];
+    if (!step || announcedRef.current === index) return;
+    announcedRef.current = index;
+    lastTickRef.current = 0;
+    if (step.kind === 'work') cueWork(step.exerciseName);
+    else cueRest(step.exerciseName);
+  }, [running, index, steps]);
+
+  useEffect(() => {
+    if (finished) cueDone();
+  }, [finished]);
+
   useEffect(() => {
     if (!running || paused || stepEndsAt == null) return;
     const tick = () => {
@@ -57,6 +76,10 @@ export function CircuitRunnerScreen() {
         advance();
       } else {
         setRemaining(left);
+        if (left <= 3 && left !== lastTickRef.current) {
+          lastTickRef.current = left;
+          cueCountdown();
+        }
       }
     };
     tick();

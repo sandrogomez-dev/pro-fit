@@ -33,7 +33,8 @@
         {
           "color": "#C6FF00"
         }
-      ]
+      ],
+      "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true

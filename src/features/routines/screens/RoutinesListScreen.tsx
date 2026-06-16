@@ -23,7 +23,6 @@ export function RoutinesListScreen() {
   const createRoutine = useRoutinesStore((s) => s.createRoutine);
   const deleteRoutine = useRoutinesStore((s) => s.deleteRoutine);
   const isPremium = useAuthStore((s) => s.isPremium);
-  const signOut = useAuthStore((s) => s.signOut);
 
   const [name, setName] = useState('');
 
@@ -76,8 +75,8 @@ export function RoutinesListScreen() {
           <Pressable onPress={() => router.push('/progress')} hitSlop={spacing.md}>
             <Text style={styles.progressLink}>Progress</Text>
           </Pressable>
-          <Pressable onPress={() => void signOut()} hitSlop={spacing.md}>
-            <Text style={styles.signOut}>Sign out</Text>
+          <Pressable onPress={() => router.push('/settings')} hitSlop={spacing.md}>
+            <Text style={styles.signOut}>Settings</Text>
           </Pressable>
         </View>
       </View>
