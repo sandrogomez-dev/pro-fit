@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Button } from '@/components';
+import { Button, HowToButton } from '@/components';
 import { suggestSubstitutes, type Alternative, type SwapReason } from '@/services';
 import { useAuthStore } from '@/store';
 import { colors, fontSize, fontWeight, radius, spacing, tracking } from '@/theme';
@@ -86,9 +86,12 @@ export function AiSubstitute({
                 <View key={index} style={styles.resultCard}>
                   <Text style={styles.resultName}>{alt.name}</Text>
                   {alt.why !== '' && <Text style={styles.resultWhy}>{alt.why}</Text>}
-                  <Pressable onPress={() => onPick(alt.name)} style={styles.use}>
-                    <Text style={styles.useText}>Use this</Text>
-                  </Pressable>
+                  <View style={styles.resultActions}>
+                    <Pressable onPress={() => onPick(alt.name)} style={styles.use}>
+                      <Text style={styles.useText}>Use this</Text>
+                    </Pressable>
+                    <HowToButton name={alt.name} label="Watch" />
+                  </View>
                 </View>
               ))}
               <Text style={styles.disclaimer}>AI-suggested · not medical advice</Text>
@@ -167,9 +170,14 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: fontSize.sm,
   },
+  resultActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: spacing.xs,
+  },
   use: {
     alignSelf: 'flex-start',
-    marginTop: spacing.xs,
   },
   useText: {
     color: colors.accent,

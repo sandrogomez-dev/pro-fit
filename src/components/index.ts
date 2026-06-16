@@ -6,3 +6,4 @@ export { Screen } from './Screen';
 export { Button } from './Button';
 export { TextField } from './TextField';
 export { confirm, notify } from './confirm';
+export { HowToButton } from './HowToButton';

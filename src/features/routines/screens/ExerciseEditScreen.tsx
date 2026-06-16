@@ -2,7 +2,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text } from 'react-native';
 
-import { Button, Screen, TextField, confirm } from '@/components';
+import { Button, HowToButton, Screen, TextField, confirm } from '@/components';
 import { AiSubstitute } from '@/features/ai';
 import { selectExerciseById, useRoutinesStore } from '@/store';
 import { colors, fontSize, spacing } from '@/theme';
@@ -54,6 +54,7 @@ export function ExerciseEditScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <TextField label="Name" value={name} onChangeText={setName} autoCapitalize="sentences" />
+        <HowToButton name={name} />
         <Text style={styles.hint}>Times are set on the routine (Work / Rest / Rounds).</Text>
 
         <AiSubstitute exerciseName={name} onPick={setName} />
