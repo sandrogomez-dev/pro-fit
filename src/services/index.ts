@@ -21,3 +21,10 @@ export {
 } from './notifications';
 export { restEndHaptic } from './haptics';
 export { playTick, playGo, playDone, speak } from './sound';
+export {
+  suggestSubstitutes,
+  type Alternative,
+  type SubstituteResult,
+  type SubstituteInput,
+  type SwapReason,
+} from './ai';

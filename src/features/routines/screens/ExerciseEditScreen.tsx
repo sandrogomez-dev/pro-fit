@@ -1,8 +1,9 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text } from 'react-native';
 
 import { Button, Screen, TextField, confirm } from '@/components';
+import { AiSubstitute } from '@/features/ai';
 import { selectExerciseById, useRoutinesStore } from '@/store';
 import { colors, fontSize, spacing } from '@/theme';
 
@@ -47,12 +48,19 @@ export function ExerciseEditScreen() {
   return (
     <Screen>
       <Stack.Screen options={{ title: 'Edit exercise' }} />
-      <View style={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <TextField label="Name" value={name} onChangeText={setName} autoCapitalize="sentences" />
         <Text style={styles.hint}>Times are set on the routine (Work / Rest / Rounds).</Text>
+
+        <AiSubstitute exerciseName={name} onPick={setName} />
+
         <Button title="Save" onPress={onSave} style={styles.save} />
         <Button title="Delete exercise" variant="ghost" onPress={onDelete} />
-      </View>
+      </ScrollView>
     </Screen>
   );
 }
