@@ -47,6 +47,14 @@ type RoutinePatch = Partial<
   Pick<LocalRoutine, 'name' | 'work_seconds' | 'rest_seconds' | 'rounds'>
 >;
 
+interface RoutineTemplateInput {
+  name: string;
+  workSeconds: number;
+  restSeconds: number;
+  rounds: number;
+  exercises: string[];
+}
+
 interface RoutinesState {
   routines: LocalRoutine[];
   exercises: LocalExercise[];
@@ -55,6 +63,7 @@ interface RoutinesState {
   hydrated: boolean;
 
   createRoutine: (name: string) => string | null;
+  addRoutineFromTemplate: (template: RoutineTemplateInput) => string | null;
   renameRoutine: (id: string, name: string) => void;
   updateRoutine: (id: string, patch: RoutinePatch) => void;
   deleteRoutine: (id: string) => void;
@@ -96,6 +105,45 @@ export const useRoutinesStore = create<RoutinesState>()(
         set((s) => ({ routines: [...s.routines, routine] }));
         void get().runSync();
         return routine.id;
+      },
+
+      addRoutineFromTemplate: (template) => {
+        const user = useAuthStore.getState().user;
+        if (!user) return null;
+        if (!canCreateRoutine(get().routines)) return null;
+
+        const routineId = randomUUID();
+        const now = new Date().toISOString();
+        const routine: LocalRoutine = {
+          id: routineId,
+          user_id: user.id,
+          name: template.name,
+          created_at: now,
+          work_seconds: template.workSeconds,
+          rest_seconds: template.restSeconds,
+          rounds: template.rounds,
+          pendingSync: true,
+          pendingDelete: false,
+        };
+        const exercises: LocalExercise[] = template.exercises.map((name, index) => ({
+          id: randomUUID(),
+          routine_id: routineId,
+          user_id: user.id,
+          name,
+          target_sets: null,
+          target_reps: null,
+          order: index,
+          work_seconds: null,
+          rest_seconds: null,
+          pendingSync: true,
+          pendingDelete: false,
+        }));
+        set((s) => ({
+          routines: [...s.routines, routine],
+          exercises: [...s.exercises, ...exercises],
+        }));
+        void get().runSync();
+        return routineId;
       },
 
       renameRoutine: (id, name) => {

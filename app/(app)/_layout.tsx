@@ -29,6 +29,7 @@ export default function AppLayout() {
       >
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="progress" options={{ title: 'Progress' }} />
+        <Stack.Screen name="templates" options={{ title: 'Sample routines' }} />
         <Stack.Screen name="routine/[id]" options={{ title: 'Routine' }} />
         <Stack.Screen name="exercise/[id]" options={{ title: 'Exercise' }} />
         <Stack.Screen name="run/[routineId]" options={{ headerShown: false }} />

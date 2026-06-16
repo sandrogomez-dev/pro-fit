@@ -101,6 +101,14 @@ export function RoutinesListScreen() {
         </Text>
       )}
 
+      <Pressable
+        onPress={() => router.push('/templates')}
+        hitSlop={spacing.sm}
+        style={styles.templatesLink}
+      >
+        <Text style={styles.templatesLinkText}>✨ Browse sample routines</Text>
+      </Pressable>
+
       <FlatList
         data={routines}
         keyExtractor={(item) => item.id}
@@ -110,7 +118,14 @@ export function RoutinesListScreen() {
         ListEmptyComponent={
           <View style={styles.empty}>
             <Text style={styles.emptyTitle}>No routines yet</Text>
-            <Text style={styles.emptyText}>Create your first one above to start training.</Text>
+            <Text style={styles.emptyText}>
+              Create one above, or start from a ready-made circuit.
+            </Text>
+            <Button
+              title="Browse sample routines"
+              variant="secondary"
+              onPress={() => router.push('/templates')}
+            />
           </View>
         }
         renderItem={({ item }) => (
@@ -185,6 +200,15 @@ const styles = StyleSheet.create({
     fontSize: fontSize.xs,
     marginTop: spacing.sm,
     fontWeight: fontWeight.medium,
+  },
+  templatesLink: {
+    marginTop: spacing.md,
+    alignSelf: 'flex-start',
+  },
+  templatesLinkText: {
+    color: colors.accent,
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.bold,
   },
   list: {
     paddingVertical: spacing.xl,
